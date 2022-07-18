@@ -4,15 +4,27 @@
 
 > What do you think are the greatest areas of risk in completing the project?
 
--
+- I could see the inital view, where the user is supposed to enter a repo name, could be at risk because it requires routing logic to do it nicely.
+
+- Accessibility may not be 100%.
 
 > What changes/additions would you make to the design?
 
--
+- Add loading state designs.
+
+- Add unhappy path designs.
+
+- Pagination or infinite scroll.
 
 > List a two or three features that you would consider implementing in the future that would add significant value to the project.
 
--
+- Autocomplete in the search box.
+
+- Filtering by tags.
+
+- Fuzzy search for issues.
+
+- Sort issues by comment engagement and recently updated.
 
 ---
 
