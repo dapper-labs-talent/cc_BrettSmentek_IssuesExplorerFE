@@ -17,7 +17,7 @@ function reducer(state, action) {
   switch (action.type) {
     case actions.SET_ISSUES:
       return {
-        issues: [...action.issues],
+        issues: action.issues === null ? null : [...action.issues],
       };
     default:
       return state;

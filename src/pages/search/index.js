@@ -14,11 +14,17 @@ function Search() {
     try {
       const issues = await fetchAllIssues(searchInput);
 
+      if (issues.message) {
+        throw new Error(issues.message);
+      }
+
       setIssues(issues);
+      setIsError(false);
     } catch (e) {
       console.error(e);
 
       setIsError(true);
+      setIssues(null);
     }
   };
 
@@ -50,12 +56,12 @@ function Search() {
           onKeyDown={onKeyPress}
         />
       </label>
-      {isError ? <Error>{SEARCH_ERROR}</Error> : null}
+      {isError ? <ErrorText>{SEARCH_ERROR}</ErrorText> : null}
     </div>
   );
 }
 const IssueViewerTitle = styled.h1``;
-const Error = styled.span`
+const ErrorText = styled.span`
   color: red;
 `;
 
