@@ -1,3 +1,4 @@
-import { Page } from "./Page";
+import Page from "./Page";
+import ErrorBoundary from "./ErrorBoundary";
 
-export { Page };
+export { Page, ErrorBoundary };

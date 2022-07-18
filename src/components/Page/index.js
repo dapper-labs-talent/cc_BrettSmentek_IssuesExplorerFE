@@ -1,3 +1,5 @@
+import styled from "styled-components";
+
 function Page({ children }) {
   return <PageLayout>{children}</PageLayout>;
 }

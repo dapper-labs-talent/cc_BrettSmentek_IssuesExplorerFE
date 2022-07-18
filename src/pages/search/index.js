@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import styled from "styled-components";
 import { fetchAllIssues } from "../../api";
+import { IssuesContext } from "../../App";
 import { GITHUB_ISSUE_VIEWER, SEARCH_ERROR } from "../../copy";
 
 function Search() {
@@ -9,9 +10,11 @@ function Search() {
 
   const [isError, setIsError] = useState(false);
 
-  const search = () => {
+  const search = async () => {
     try {
-      const issues = fetchAllIssues(searchInput);
+      const issues = await fetchAllIssues(searchInput);
+
+      setIssues(issues);
     } catch (e) {
       console.error(e);
 
