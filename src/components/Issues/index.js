@@ -39,6 +39,8 @@ const Card = styled.div`
 
 const Title = styled.h2`
   font-size: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 768px) {
     font-size: 16px;
