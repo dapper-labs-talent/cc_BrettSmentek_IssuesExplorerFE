@@ -41,7 +41,7 @@ export const fetchAllIssues = async (searchInput) => {
 
     const json = await res.json();
 
-    return json;
+    return { issues: json, repoUrl: `https://github.com/${repo}` };
   } catch (e) {
     throw new Error("Fetching error", e);
   }

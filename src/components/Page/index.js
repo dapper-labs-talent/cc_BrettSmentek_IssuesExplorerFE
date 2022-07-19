@@ -6,6 +6,7 @@ function Page({ children }) {
 
 const PageLayout = styled.div`
   display: flex;
+  flex-direction: column;
 `;
 
 export default Page;
