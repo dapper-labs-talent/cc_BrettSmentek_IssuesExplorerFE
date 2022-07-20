@@ -1,34 +1,25 @@
 import { useContext, useState } from "react";
 import styled from "styled-components";
-import { fetchAllIssues } from "../../api";
+import { useFetchIssues } from "../../api";
 import { Page } from "../../components";
-import { IssuesContext } from "../../Context";
-import { GITHUB_ISSUE_VIEWER, PASTE_LINK, SEARCH_ERROR } from "../../copy";
+import { IssuesContext } from "../../context";
+import SearchIcon from "../../icons/search.svg";
+
+import {
+  GITHUB_ISSUE_VIEWER,
+  LOADING,
+  PASTE_LINK,
+  SEARCH_ERROR,
+} from "../../copy";
 
 function Search() {
   const [searchInput, setSearchInput] = useState("");
-  const { setIssues, setRepoUrl } = useContext(IssuesContext);
+  const { isLoading, isError } = useContext(IssuesContext);
 
-  const [isError, setIsError] = useState(false);
+  const { fetchIssues } = useFetchIssues();
 
-  const search = async () => {
-    try {
-      const { issues, repoUrl } = await fetchAllIssues(searchInput);
-
-      if (issues.message) {
-        throw new Error(issues.message);
-      }
-
-      setRepoUrl(repoUrl);
-      setIssues(issues);
-      setIsError(false);
-    } catch (e) {
-      console.error(e);
-
-      setIsError(true);
-      setIssues(null);
-      setRepoUrl("");
-    }
+  const search = () => {
+    fetchIssues(searchInput);
   };
 
   const handleChange = (e) => {
@@ -59,7 +50,7 @@ function Search() {
           onKeyDown={onKeyPress}
           placeholder={PASTE_LINK}
         />
-
+        {isLoading ? <Loading>{LOADING}</Loading> : null}
         {isError ? <ErrorText>{SEARCH_ERROR}</ErrorText> : null}
       </Center>
     </Page>
@@ -68,8 +59,9 @@ function Search() {
 
 const Input = styled.input`
   border: 2px black solid;
-  padding: 14px;
+  padding: 14px 14px 14px 40px;
   border-radius: 8px;
+  background: transparent url(${SearchIcon}) no-repeat 13px center;
 `;
 
 const Center = styled.div`
@@ -93,5 +85,7 @@ const IssueViewerTitle = styled.h1`
 const ErrorText = styled.span`
   color: red;
 `;
+
+const Loading = styled.span``;
 
 export default Search;

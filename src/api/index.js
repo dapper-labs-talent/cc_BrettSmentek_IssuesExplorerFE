@@ -1,5 +1,15 @@
-const getIssuesUrl = (repoName) =>
-  `https://api.github.com/repos/${repoName}/issues`;
+import { useCallback, useContext } from "react";
+import { IssuesContext } from "../context";
+
+export const filters = {
+  all: "all",
+  open: "open",
+  closed: "closed",
+  pullRequests: "pullRequests",
+};
+
+const getIssuesUrl = (repoName, { state } = { state: filters.all }) =>
+  `https://api.github.com/repos/${repoName}/issues?state=${state}&per_page=100`;
 
 export const searchInputParser = (searchInput) => {
   try {
@@ -31,18 +41,51 @@ export const searchInputParser = (searchInput) => {
   }
 };
 
-export const fetchAllIssues = async (searchInput) => {
-  try {
-    const { orgName, repoName } = searchInputParser(searchInput);
+export function useFetchIssues() {
+  const { setIsLoading, setIsError, setIssues, setRepoUrl } =
+    useContext(IssuesContext);
 
-    const repo = `${orgName}/${repoName}`;
+  const fetchIssues = useCallback(
+    (searchInput, { state } = { state: filters.all }) => {
+      const executeFetch = async (searchInput, { state }) => {
+        try {
+          if (state === filters.pullRequests) {
+            state = filters.all;
+          }
 
-    const res = await fetch(getIssuesUrl(repo));
+          const { orgName, repoName } = searchInputParser(searchInput);
 
-    const json = await res.json();
+          const repo = `${orgName}/${repoName}`;
 
-    return { issues: json, repoUrl: `https://github.com/${repo}` };
-  } catch (e) {
-    throw new Error("Fetching error", e);
-  }
-};
+          setIsLoading(true);
+          setIsError(false);
+
+          const res = await fetch(getIssuesUrl(repo, { state }));
+
+          const json = await res.json();
+
+          if (json.message) {
+            throw new Error(json.message);
+          }
+
+          setRepoUrl(`https://github.com/${repo}`);
+          setIssues(json);
+          setIsLoading(false);
+          setIsError(false);
+        } catch (e) {
+          console.error(e);
+
+          setIsError(true);
+          setIsLoading(false);
+          setRepoUrl(``);
+          setIssues(null);
+        }
+      };
+
+      executeFetch(searchInput, { state });
+    },
+    [setIssues, setRepoUrl, setIsError, setIsLoading]
+  );
+
+  return { fetchIssues };
+}

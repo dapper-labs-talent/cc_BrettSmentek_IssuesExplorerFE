@@ -1,13 +1,28 @@
 import styled from "styled-components";
+import commentStripper from "strip-html-comments";
 import { NO_DESCRIPTION } from "../../copy";
+import { ReactComponent as ClosedIcon } from "../../icons/issue-closed.svg";
+import { ReactComponent as PRIcon } from "../../icons/pull-request.svg";
 
-export function Issue({ title, description, tags }) {
+export function Issue({ title, description, tags, isPullRequest, isClosed }) {
+  let formattedDescripton = "";
+
+  if (description) {
+    formattedDescripton = commentStripper(description);
+  }
+
   return (
     <Card>
-      <Title>{title}</Title>
+      <HeaderRow>
+        <Title>{title}</Title>
+        <IconRow>
+          {isPullRequest ? <PRIcon style={{ width: "14px" }} /> : null}
+          {isClosed ? <ClosedIcon style={{ width: "16px" }} /> : null}
+        </IconRow>
+      </HeaderRow>
       <Description>
-        {description ? (
-          description
+        {formattedDescripton ? (
+          formattedDescripton
         ) : (
           <NoDescription>{NO_DESCRIPTION}</NoDescription>
         )}
@@ -37,8 +52,21 @@ const Card = styled.div`
   }
 `;
 
+const HeaderRow = styled.div`
+  display: flex;
+  padding-left: 8px;
+`;
+
+const IconRow = styled.div`
+  display: flex;
+  right: 22px;
+  top: 4px;
+  gap: 8px;
+`;
+
 const Title = styled.h2`
   font-size: 24px;
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
 

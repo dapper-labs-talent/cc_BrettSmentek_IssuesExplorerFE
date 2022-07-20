@@ -1,15 +1,40 @@
 import { useContext, useState } from "react";
 import styled from "styled-components";
+import { useFetchIssues, filters } from "../../api";
 import { Issue, Page } from "../../components";
-import { IssuesContext } from "../../Context";
-import { GITHUB_ISSUE_VIEWER, NO_ISSUES, ALL_ISSUES } from "../../copy";
+import { IssuesContext } from "../../context";
+import {
+  GITHUB_ISSUE_VIEWER,
+  NO_ISSUES,
+  ALL_ISSUES,
+  OPEN_ISSUES,
+  CLOSED_ISSUES,
+  PULL_REQUESTS,
+} from "../../copy";
+
+const filterButtons = [ALL_ISSUES, OPEN_ISSUES, CLOSED_ISSUES, PULL_REQUESTS];
+const filterMap = {
+  [ALL_ISSUES]: filters.all,
+  [OPEN_ISSUES]: filters.open,
+  [CLOSED_ISSUES]: filters.closed,
+  [PULL_REQUESTS]: filters.pullRequests,
+};
 
 function Issues() {
-  const { issues, repoUrl, setIssues, setRepoUrl } = useContext(IssuesContext);
+  const { issues, repoUrl, setIssues, setRepoUrl, isLoading } =
+    useContext(IssuesContext);
+  const [activeFilter, setActiveFilter] = useState(filters.all);
+  const { fetchIssues } = useFetchIssues();
 
   const handleClose = () => {
     setIssues(null);
     setRepoUrl("");
+  };
+
+  const handleFilter = (filter) => {
+    setActiveFilter(filter);
+
+    fetchIssues(repoUrl, { state: filter });
   };
 
   return (
@@ -20,21 +45,40 @@ function Issues() {
         <URL>{repoUrl}</URL>
       </Header>
       <Filter>
-        <Button>{ALL_ISSUES}</Button>
+        {filterButtons.map((filter) => (
+          <Button
+            key={filter}
+            onClick={() => handleFilter(filterMap[filter])}
+            isActive={activeFilter === filterMap[filter]}
+          >
+            {filter}
+          </Button>
+        ))}
         <Fill />
         <Close onClick={handleClose} />
       </Filter>
       {issues.length === 0 ? (
         <p>{NO_ISSUES}</p>
       ) : (
-        <IssuesGrid>
+        <IssuesGrid isLoading={isLoading}>
           {issues.map((issue, idx) => {
+            let shouldRender = true;
+            if (activeFilter === filters.pullRequests) {
+              shouldRender = "pull_request" in issue;
+            }
+
+            if (!shouldRender) {
+              return null;
+            }
+
             return (
               <Issue
                 key={`issue-${idx}`}
                 description={issue.body}
                 title={issue.title}
                 tags={issue.labels}
+                isPullRequest={"pull_request" in issue}
+                isClosed={issue["closed_at"] && issue["closed_at"] !== null}
               />
             );
           })}
@@ -57,8 +101,12 @@ const Button = styled.button`
   border: none;
   padding: 0 !important;
 
-  text-decoration: underline;
+  text-decoration: ${({ isActive }) => (isActive ? "underline" : "none")};
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
 const Close = styled.button`
@@ -94,6 +142,12 @@ const Filter = styled.div`
   padding-left: 40px;
   margin-bottom: 20px;
   display: flex;
+  gap: 46px;
+
+  @media (max-width: 768px) {
+    padding-left: 8px;
+    gap: 12px;
+  }
 `;
 
 const Fill = styled.div`
@@ -124,6 +178,7 @@ const URL = styled.div`
 
 const IssuesGrid = styled.section`
   display: flex;
+  opacity: ${({ isLoading }) => (isLoading ? "50%" : "unset")};
   flex-wrap: wrap;
   gap: 24px;
   width: 100%;
