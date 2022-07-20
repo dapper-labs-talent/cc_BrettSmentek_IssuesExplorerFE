@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ErrorBoundary } from "./components";
-import { IssuesContext, StateProvider } from "./context";
+import { IssuesContext, StateProvider } from "./app-context";
 import Issues from "./pages/issues";
 import Search from "./pages/search";
 

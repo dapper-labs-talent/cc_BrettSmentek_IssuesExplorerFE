@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { IssuesContext } from "../context";
+import { IssuesContext } from "../app-context";
 
 export const filters = {
   all: "all",

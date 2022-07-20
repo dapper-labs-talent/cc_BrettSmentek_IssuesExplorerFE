@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import styled from "styled-components";
 import { useFetchIssues, filters } from "../../api";
 import { Issue, Page } from "../../components";
-import { IssuesContext } from "../../context";
+import { IssuesContext } from "../../app-context";
 import {
   GITHUB_ISSUE_VIEWER,
   NO_ISSUES,

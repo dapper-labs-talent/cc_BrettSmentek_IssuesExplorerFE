@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import styled from "styled-components";
 import { useFetchIssues } from "../../api";
 import { Page } from "../../components";
-import { IssuesContext } from "../../context";
+import { IssuesContext } from "../../app-context";
 import SearchIcon from "../../icons/search.svg";
 
 import {
